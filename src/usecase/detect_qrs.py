@@ -53,11 +53,12 @@ def get_similarity_signal(ecg_signal: np.array,
     return similarity_signal
 
 
-def detect_qrs(qrs_file_path: str,
-               method: str,
-               exam_id: str,
-               output_folder: str = OUTPUT_FOLDER,
-               smoothing: bool = False) -> str:
+def detect_qrs_from_edf(
+        qrs_file_path: str,
+        method: str,
+        exam_id: str,
+        output_folder: str = OUTPUT_FOLDER,
+        smoothing: bool = False) -> str:
     """
     Detect QRS on a, ECG signal signal.
 
@@ -170,10 +171,9 @@ def parse_exam_id(qrs_file_path: str) -> str:
 
 
 if __name__ == "__main__":
-
     args = parse_detect_qrs_args(sys.argv[1:])
     args_dict = convert_args_to_dict(args)
     if "exam_id" not in args_dict:
         exam_id = parse_exam_id(args_dict["qrs_file_path"])
         args_dict.update({"exam_id": exam_id})
-    detect_qrs(**args_dict)
+    detect_qrs_from_edf(**args_dict)
