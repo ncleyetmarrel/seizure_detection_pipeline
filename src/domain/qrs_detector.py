@@ -37,8 +37,10 @@ class QRSDetector:
         try:
             qrs_frames = bsp_ecg.ecg(
                 signal=np.array(ecg_data), sampling_rate=fs, show=False)[2]
-        except Exception:
-            print("Exception in detect_qrs_gqrs")
+        except Exception as e:
+            print("Exception in detect_hamilton")
+            print(e)
+            raise e
         return qrs_frames
 
     def _detect_qrs_engelsee(self, ecg_data, fs):
@@ -60,8 +62,9 @@ class QRSDetector:
             _, qrs_frames = bsp_ecg.extract_heartbeats(
                 signal=filtered, rpeaks=rpeaks, sampling_rate=fs,
                 before=0.2, after=0.4)
-        except Exception:
+        except Exception as e:
             print("Exception in detect_qrs_gqrs")
+            print(e)
         return qrs_frames.tolist()
 
     def _to_rr_intervals(self, frame_data, fs):

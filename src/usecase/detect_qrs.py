@@ -6,6 +6,7 @@ SPDX-License-Identifier: GPL-3.0
 """
 import os
 import argparse
+import pandas as pd
 from typing import List
 import sys
 import numpy as np
@@ -18,6 +19,7 @@ from src.infrastructure.edf_loader import EdfLoader
 OUTPUT_FOLDER = "output/rr_intervals"
 METHODS = ["hamilton", "xqrs", "gqrs", "swt", "engelsee"]
 DEFAULT_METHOD = "hamilton"
+ECG_PATCH_FREQUENCY = 250
 
 
 def get_similarity_signal(ecg_signal: np.array,
@@ -124,6 +126,76 @@ def detect_qrs_from_edf(
     return output_file_path, sampling_frequency
 
 
+def detect_qrs(
+        qrs_file_path: str,
+        method: str,
+        exam_id: str,
+        output_folder: str = OUTPUT_FOLDER,
+        smoothing: bool = False) -> str:
+    """
+    Detect QRS on a, ECG signal signal.
+
+    From an EDF file path, detects QRS abd and writes their frame and
+    RR-intervals in a csv file.
+
+    parameters
+    ----------
+    qrs_file_path : str
+        The path of the file including ECG signal
+    method : str
+        QRS detection method, to be chose between hamilton, xqrs, gqrs, swt
+        and engelsee
+    exam_id : str
+        ID of the exam to load
+    output_folder : str
+        Path of the output folder
+
+    returns
+    -------
+    output_file_path : str
+        Path where detected qrs are stored in csv format
+    """
+    # Reads ECG channel from EDF files
+    df_ecg = pd.read_parquet(qrs_file_path)
+    df_ecg = df_ecg[['time', 'ecgpoint']]
+    df_ecg.index = df_ecg['time']
+    # df_ecg = df_ecg.iloc[:1_000_000]
+    df_ecg = df_ecg.fillna(0) # Requires no nan value
+    start_time = df_ecg['time'].iloc[0]
+    end_time = df_ecg['time'].iloc[-1]
+    sampling_frequency = ECG_PATCH_FREQUENCY
+
+    qrs_detector = QRSDetector()
+    signal = df_ecg["ecgpoint"].values
+    if smoothing:
+        signal = get_similarity_signal(np.array(signal))
+
+    # signal[np.where(np.isnan(signal))[0]] = signal[np.where(np.isnan(signal))[0]-1]
+    signal = list(signal)
+
+    method = DEFAULT_METHOD
+    df_ecg = df_ecg.fillna(0)
+    detected_qrs, rr_intervals = qrs_detector.get_cardiac_infos(
+        signal, sampling_frequency, method
+    )
+    df_detections = df_ecg.copy()
+    df_detections = df_detections.iloc[detected_qrs[:-1]]
+    df_detections["timestamp"] = df_detections.index
+    df_detections["frame"] = detected_qrs[:-1]
+    df_detections["rr_interval"] = rr_intervals
+    df_detections.drop(columns="ecgpoint", inplace=True)
+
+    # Export
+    output_file_path = generate_output_path(
+        input_file_path=exam_id, output_folder=output_folder, format="csv", prefix="rr"
+    )
+
+    df_detections.to_parquet(output_file_path, index=False)
+    # df_detections.to_csv(output_file_path, sep=",", index=False)
+    print(output_file_path)
+    return output_file_path, sampling_frequency
+
+
 def parse_detect_qrs_args(args_to_parse: List[str]) -> argparse.Namespace:
     """
     Parse arguments for adaptable input.
@@ -176,4 +248,4 @@ if __name__ == "__main__":
     if "exam_id" not in args_dict:
         exam_id = parse_exam_id(args_dict["qrs_file_path"])
         args_dict.update({"exam_id": exam_id})
-    detect_qrs_from_edf(**args_dict)
+    detect_qrs(**args_dict)

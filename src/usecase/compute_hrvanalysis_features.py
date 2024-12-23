@@ -372,7 +372,8 @@ def compute_hrvanalysis_features(
     output_file_path :
         Output file of computed HRVanalysis features
     """
-    df_rr_intervals = pd.read_csv(os.path.join(rr_intervals_file_path))
+    df_rr_intervals = pd.read_parquet(os.path.join(rr_intervals_file_path))
+    # df_rr_intervals = pd.read_csv(os.path.join(rr_intervals_file_path))
     rr_intervals = df_rr_intervals["rr_interval"].values
     rr_timestamps = np.cumsum(rr_intervals)
     start_timestamp = df_rr_intervals["timestamp"].values[0]  # MODIFY
@@ -400,13 +401,15 @@ def compute_hrvanalysis_features(
     output_file_path = generate_output_path(
         input_file_path=rr_intervals_file_path,
         output_folder=output_folder,
-        format="csv",
+        format="parquet",
+        # format="csv",
         prefix="feats",
     )
 
     df_features["filename"] = output_file_path
 
-    df_features.to_csv(output_file_path, sep=",", index=False)
+    df_features.to_parquet(output_file_path, index=False)
+    # df_features.to_csv(output_file_path, sep=",", index=False)
 
     return output_file_path
 
@@ -420,8 +423,7 @@ def parse_compute_hrvanalysis_features_args(
     parameters
     ----------
     args_to_parse : List[str]
-        List of the element to parse. Should be sys.argv[1:] if args are
-        inputed via CLI
+        List of the element to parse. Should be sys.argv[1:] if args are inputed via CLI
 
     returns
     -------

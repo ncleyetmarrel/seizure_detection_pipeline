@@ -50,7 +50,12 @@ fetch_data:
 # PYTHON SCRIPT ON INDIVIDUAL FILES  # parquet
 individual_detect_qrs:
 	. $(FOLDER_PATH)/env/bin/activate; \
-	python3 src/usecase/detect_qrs.py --qrs-file-path $(DATA_PATH)/ecg.01-006.csv.parquet --method hamilton  --output-folder $(EXPORT_PATH)/individual/res-v0_6
+	python3 src/usecase/detect_qrs.py --qrs-file-path $(DATA_PATH)/ecg-01-006-corrected.parquet --method hamilton  --output-folder $(EXPORT_PATH)/individual/res-v0_6
+
+
+individual_compute_hrvanalysis_features:
+	. $(FOLDER_PATH)/env/bin/activate; \
+	python3 src/usecase/compute_hrvanalysis_features.py --rr-intervals-file-path output/individual/res-v0_6/rr_ecg-01-006-corrected.csv --output-folder $(EXPORT_PATH)/individual/feats-v0_6
 
 
 # PYTHON SCRIPT ON INDIVIDUAL FILES  # Pyedf
