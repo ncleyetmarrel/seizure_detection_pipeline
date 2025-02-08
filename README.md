@@ -28,9 +28,23 @@ The pipeline requires these packages to run :
 * airflow-provider-great-expectations == 0.0.7
 * psycopg2-binary == 2.8.6
 
-You can install them in a virtual environment on your machine via the command : 
+You can install the dependencies using either pip or uv:
+
+Using pip:
 ```sh
-    $ pip install -r requirements.txt
+pip install -r requirements.txt
+```
+
+Using uv (recommended for faster installation):
+```sh
+# Install uv
+pip install uv
+
+# Install main dependencies
+uv pip install .
+
+# Install development dependencies (optional)
+uv pip install ".[dev]"
 ```
 
 ### Environment
