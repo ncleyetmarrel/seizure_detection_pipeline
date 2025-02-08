@@ -64,6 +64,7 @@ def generate_output_path(input_file_path: str,
     """
     os.makedirs(output_folder, exist_ok=True)
     output_file_parsing = input_file_path.split('/')[-1].split('.')[0]
+    # output_file_parsing = input_file_path.split('/')[-1].split('.')[1]
     for prefix_to_remove in PREFIX_TO_REMOVE:
         try:
             output_file_parsing = output_file_parsing.split(
