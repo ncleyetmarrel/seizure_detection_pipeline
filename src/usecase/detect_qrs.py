@@ -14,7 +14,6 @@ import numpy as np
 sys.path.append(".")
 from src.usecase.utilities import convert_args_to_dict, generate_output_path
 from src.domain.qrs_detector import QRSDetector
-from src.infrastructure.edf_loader import EdfLoader
 
 OUTPUT_FOLDER = "output/rr_intervals"
 METHODS = ["hamilton", "xqrs", "gqrs", "swt", "engelsee"]
@@ -85,6 +84,8 @@ def detect_qrs_from_edf(
         Path where detected qrs are stored in csv format
     """
     # Reads ECG channel from EDF files
+    from src.infrastructure.edf_loader import EdfLoader
+
     edfloader = EdfLoader(qrs_file_path)
     ecg_channel_name = edfloader.get_ecg_candidate_channel()
     start_time, end_time = edfloader.get_edf_file_interval()
@@ -126,6 +127,50 @@ def detect_qrs_from_edf(
     return output_file_path, sampling_frequency
 
 
+def read_file_by_extension(file_path: str) -> pd.DataFrame:
+    """
+    Read a file based on its extension and validate required columns.
+
+    Parameters
+    ----------
+    file_path : str
+        Path to the file to read
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame containing the data with validated columns
+
+    Raises
+    ------
+    ValueError
+        If the file extension is not supported or required columns are missing
+    """
+    extension = file_path.split('.')[-1].lower()
+    
+    readers = {
+        'parquet': pd.read_parquet,
+        'csv': pd.read_csv,
+        'xlsx': pd.read_excel,
+        'xls': pd.read_excel
+    }
+    
+    if extension not in readers:
+        raise ValueError(f"Unsupported file format: {extension}. "
+                        f"Supported formats: {', '.join(readers.keys())}")
+    
+    df = readers[extension](file_path)
+    
+    required_columns = {'time', 'ecgpoint'}
+    missing_columns = required_columns - set(df.columns)
+    
+    if missing_columns:
+        raise ValueError(f"Missing required columns: {', '.join(missing_columns)}. "
+                        f"File must contain 'time' and 'ecgpoint' columns.")
+    
+    return df
+
+
 def detect_qrs(
         qrs_file_path: str,
         method: str,
@@ -155,8 +200,8 @@ def detect_qrs(
     output_file_path : str
         Path where detected qrs are stored in csv format
     """
-    # Reads ECG channel from EDF files
-    df_ecg = pd.read_parquet(qrs_file_path)
+    # Reads ECG channel from file
+    df_ecg = read_file_by_extension(qrs_file_path)
     df_ecg = df_ecg[['time', 'ecgpoint']]
     df_ecg.index = df_ecg['time']
     # df_ecg = df_ecg.iloc[:1_000_000]
