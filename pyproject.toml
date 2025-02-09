@@ -1,24 +1,15 @@
 [project]
 name = "seizure-detection-pipeline"
+readme = "README.md"
 version = "1.0.0"
-requires-python = "~=3.9.0"
-
+requires-python = ">=3.10"
 dependencies = [
-    "airflow-provider-great-expectations==0.0.7",
-    "biosppy==0.7.3",
-    "click==8.0.1",
-    "ecg-qc==1.0b5",
-    "great-expectations==0.13.25",
-    "hrv-analysis==1.0.4",
-    "mlflow==1.23.1",
-    "numpy==1.19.5",
-    "pandas==1.1.5",
-    "seaborn==0.11.2",
-    #"psycopg2-binary==2.8.6",
+    "hrv-analysis>=1.0.5",
     "py-ecg-detectors==1.0.2",
-    "pyEDFlib==0.1.22",
-    "SQLAlchemy==1.3.24",
-    "wfdb==3.4.0",
+    "wfdb",
+    "numpy>=1.22.0",
+    "pandas>=1.4.0",
+    "biosppy==0.7.3",
 ]
 
 [project.optional-dependencies]

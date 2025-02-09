@@ -2,8 +2,8 @@ FOLDER_PATH= .
 SRC_PATH=./src
 TEST_PATH=./tests
 
-DATA_PATH=/data/extracts_parquet
-EXPORT_PATH=/data
+DATA_PATH=data/dataset
+EXPORT_PATH=data/exports
 
 TSE_BI_FORMATTING=dataset
 COMPARISON_FOLDER=res-v0_6
@@ -49,8 +49,7 @@ fetch_data:
 
 # PYTHON SCRIPT ON INDIVIDUAL FILES  # parquet
 individual_detect_qrs:
-	. $(FOLDER_PATH)/env/bin/activate; \
-	python3 src/usecase/detect_qrs.py --qrs-file-path $(DATA_PATH)/ecg.01-002.parquet --method hamilton  --output-folder $(EXPORT_PATH)/1_rr_inteverals/
+	python3 src/usecase/detect_qrs.py --qrs-file-path $(DATA_PATH)/ecg.01-006.csv --method hamilton  --output-folder $(EXPORT_PATH)/1_rr_inteverals/
 
 individual_compute_hrvanalysis_features:
 	. $(FOLDER_PATH)/env/bin/activate; \
@@ -133,3 +132,16 @@ load_rr:
 
 load_annotations:
 	python3 visualization/annotations_loader.py --pg-host localhost --pg-port 5432 --pg-user postgres --pg-password postgres --pg-database postgres --annotation-filename data/tuh/dev/01_tcp_ar/076/00007633/s003_2013_07_09/00007633_s003_t007.tse_bi --edf-filename data/tuh/dev/01_tcp_ar/076/00007633/s003_2013_07_09/00007633_s003_t007.edf --exam 00007633_s003_t010
+
+build_docker_dev:
+	docker build -t seizure-detection-pipeline .
+
+clean_docker_dev:
+	docker stop seizure-detection-pipeline || true
+	docker rm seizure-detection-pipeline || true
+
+run_docker_dev: clean_docker_dev
+	docker run -d \
+		-v $(shell pwd):/app \
+		--name seizure-detection-pipeline \
+		seizure-detection-pipeline
