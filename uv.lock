@@ -1146,6 +1146,7 @@ dependencies = [
     { name = "pandas" },
     { name = "py-ecg-detectors" },
     { name = "pyarrow" },
+    { name = "scipy" },
     { name = "wfdb" },
 ]
 
@@ -1169,6 +1170,7 @@ requires-dist = [
     { name = "pyarrow", specifier = ">=19.0.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = "==6.2.4" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = "==3.0.0" },
+    { name = "scipy", specifier = ">=1.10.0" },
     { name = "wfdb" },
 ]
 

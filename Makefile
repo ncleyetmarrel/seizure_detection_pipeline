@@ -2,7 +2,7 @@ FOLDER_PATH= .
 SRC_PATH=./src
 TEST_PATH=./tests
 
-DATA_PATH=data/dataset/sample_ecg_inclusion/
+DATA_PATH=data/dataset/sample_ecg_inclusion
 EXPORT_PATH=data/exports
 
 TSE_BI_FORMATTING=dataset
@@ -52,8 +52,7 @@ individual_detect_qrs:
 	python3 src/usecase/detect_qrs.py --qrs-file-path $(DATA_PATH)/ecg.01-006.csv --method hamilton  --output-folder $(EXPORT_PATH)/1_rr_inteverals/
 
 individual_compute_hrvanalysis_features:
-	. $(FOLDER_PATH)/env/bin/activate; \
-	python3 src/usecase/compute_hrvanalysis_features.py --rr-intervals-file-path output/individual/res-v0_6/rr_ecg-01-006-corrected.csv --output-folder $(EXPORT_PATH)/individual/feats-v0_6
+	python3 src/usecase/compute_hrvanalysis_features.py --rr-intervals-file-path $(EXPORT_PATH)/1_rr_inteverals/ecg.01-006.csv --output-folder $(EXPORT_PATH)/2_hrv_features/
 
 # PYTHON SCRIPT ON INDIVIDUAL FILES  # Pyedf
 individual_detect_qrs_pyedf:
