@@ -2,7 +2,7 @@ FOLDER_PATH= .
 SRC_PATH=./src
 TEST_PATH=./tests
 
-DATA_PATH=data/dataset
+DATA_PATH=data/dataset/sample_ecg_inclusion/
 EXPORT_PATH=data/exports
 
 TSE_BI_FORMATTING=dataset

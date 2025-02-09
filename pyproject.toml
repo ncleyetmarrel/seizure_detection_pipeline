@@ -9,7 +9,9 @@ dependencies = [
     "wfdb",
     "numpy>=1.22.0",
     "pandas>=1.4.0",
+    "scipy>=1.10.0",
     "biosppy==0.7.3",
+    "pyarrow>=19.0.0",
 ]
 
 [project.optional-dependencies]
