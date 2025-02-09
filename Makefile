@@ -52,7 +52,7 @@ individual_detect_qrs:
 	python3 src/usecase/detect_qrs.py --qrs-file-path $(DATA_PATH)/ecg.01-006.csv --method hamilton  --output-folder $(EXPORT_PATH)/1_rr_inteverals/
 
 individual_compute_hrvanalysis_features:
-	python3 src/usecase/compute_hrvanalysis_features.py --rr-intervals-file-path $(EXPORT_PATH)/1_rr_inteverals/ecg.01-006.csv --output-folder $(EXPORT_PATH)/2_hrv_features/
+	python3 src/usecase/compute_hrvanalysis_features.py --rr-intervals-file-path $(EXPORT_PATH)/1_rr_inteverals/rr_ecg.01-006.csv --output-folder $(EXPORT_PATH)/2_hrv_features/
 
 # PYTHON SCRIPT ON INDIVIDUAL FILES  # Pyedf
 individual_detect_qrs_pyedf:

@@ -372,8 +372,8 @@ def compute_hrvanalysis_features(
     output_file_path :
         Output file of computed HRVanalysis features
     """
-    df_rr_intervals = pd.read_parquet(os.path.join(rr_intervals_file_path))
-    # df_rr_intervals = pd.read_csv(os.path.join(rr_intervals_file_path))
+    # df_rr_intervals = pd.read_parquet(os.path.join(rr_intervals_file_path))
+    df_rr_intervals = pd.read_csv(os.path.join(rr_intervals_file_path))
     rr_intervals = df_rr_intervals["rr_interval"].values
     rr_timestamps = np.cumsum(rr_intervals)
     start_timestamp = df_rr_intervals["timestamp"].values[0]  # MODIFY
@@ -398,19 +398,18 @@ def compute_hrvanalysis_features(
     )
 
     # EXPORT
-    output_file_path = generate_output_path(
-        input_file_path=rr_intervals_file_path,
-        output_folder=output_folder,
-        format="parquet",
-        # format="csv",
-        prefix="feats",
-    )
-
+    # Get the original filename and replace 'rr' with 'feats'
+    original_filename = os.path.basename(rr_intervals_file_path)
+    output_filename = original_filename.replace('rr_', 'feats_')
+    output_file_path = os.path.join(output_folder, output_filename)
+    
+    os.makedirs(output_folder, exist_ok=True)
+    
     df_features["filename"] = output_file_path
+    df_features["original_filename"] = rr_intervals_file_path
+    df_features.to_csv(output_file_path, sep=",", index=False)
 
-    df_features.to_parquet(output_file_path, index=False)
-    # df_features.to_csv(output_file_path, sep=",", index=False)
-
+    print(output_file_path)
     return output_file_path
 
 
