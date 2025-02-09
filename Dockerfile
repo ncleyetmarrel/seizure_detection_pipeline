@@ -1,6 +1,12 @@
 # Utiliser une image Python officielle comme base
 FROM python:3.10-slim
 
+# Installation de make et autres outils essentiels
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    make \
+    && rm -rf /var/lib/apt/lists/*
+
 # Définir le répertoire de travail
 WORKDIR /app
 
