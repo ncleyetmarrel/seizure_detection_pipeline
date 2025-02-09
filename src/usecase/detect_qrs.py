@@ -231,12 +231,12 @@ def detect_qrs(
     df_detections.drop(columns="ecgpoint", inplace=True)
 
     # Export
-    output_file_path = generate_output_path(
-        input_file_path=exam_id, output_folder=output_folder, format="csv", prefix="rr"
-    )
-
-    df_detections.to_parquet(output_file_path, index=False)
-    # df_detections.to_csv(output_file_path, sep=",", index=False)
+    # Get original filename without extension
+    original_filename = os.path.splitext(os.path.basename(qrs_file_path))[0]
+    output_file_path = os.path.join(output_folder, f"rr_{original_filename}.csv")
+    
+    os.makedirs(output_folder, exist_ok=True)
+    df_detections.to_csv(output_file_path, index=False)
     print(output_file_path)
     return output_file_path, sampling_frequency
 
